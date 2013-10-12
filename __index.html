@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<meta name="apple-mobile-web-app-capable" content="yes">	
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<title></title>
+	<link href="style.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="src/cordova-1.8.1.js"></script>
+	<script type="text/javascript" src="src/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="src/swipeview.js"></script>
+	
+	<script src="src/jquery.share.js" type="text/javascript" language="JavaScript"></script>
+	<!-- script -->
+    <!-- CORE JS FILES -->
+    <!-- PLUGINS -->
+    <script type="text/javascript" charset="utf-8" src="src/plugins/LocalNotification.js"></script>
+    <!-- OUR INIT -->
+    <script type="text/javascript" charset="utf-8" src="src/init.js"></script>
+	<!-- script -->
+    <link rel="stylesheet" href="src/jquery.share.css" type="text/css" />
+	<div id="fb-root"></div> 
+    <script>(function(d, s, id) { 
+      var js, fjs = d.getElementsByTagName(s)[0]; 
+      if (d.getElementById(id)) return; 
+      js = d.createElement(s); js.id = id; 
+      //js.src = "/jqueryshare/bootstrap/js/all.js#xfbml=1&appId=325618697471211"; 
+	  js.src = "/jqueryshare/bootstrap/js/all.js#xfbml=1"; 
+      fjs.parentNode.insertBefore(js, fjs); 
+    }(document, 'script', 'facebook-jssdk'));</script> 
+
+<script src="src/js/bootstrap.js"></script> 
+</head>
+
+<body onload="app.bodyLoad()">
+	<div style="position:absolute;z-index:9999; margin-top:3px; margin-left:70px;" id="share"></div>
+	<div id="wrapper"></div>
+	<!--
+	<ul id="nav">
+		<li id="prev" onclick="gallery.prev()">-</li>
+		<li class="selected" onclick="gallery.goToPage(0)"></li>
+		<li onclick="gallery.goToPage(1)"></li>
+		<li onclick="gallery.goToPage(2)"></li>
+		<li onclick="gallery.goToPage(3)"></li>
+		<li onclick="gallery.goToPage(4)"></li>
+		<li onclick="gallery.goToPage(5)"></li>
+		<li id="next" onclick="gallery.next()">+</li>
+	</ul>
+	-->
+	
+<script type="text/javascript">
+
+// push notification
+function alertDismissed() {
+        // do something
+    }
+
+function showAlert() {
+/*
+        navigator.notification.confirm(
+            'You are the winner!',  // message
+            alertDismissed,         // callback
+            'Game Over',            // title
+            'Done'                  // buttonName
+        );
+		*/
+    }
+
+// push notification    
+    
+jQuery('div[id=share]').share({
+        //networks: ['facebook','pinterest','googleplus','twitter','linkedin','tumblr','in1','email','stumbleupon','digg']
+        networks: ['facebook','pinterest','googleplus','twitter']
+    });
+
+var token="1726204214321678|xTAieBBJoDaWmBsG1stxfq4zLO4";
+var filehandler="";
+var contents="";
+var db = window.openDatabase("Database2", "1.0", "FLYAPP", 200000);
+var array_size="";
+var slidesarray=[];
+var d="";
+var month="";
+var day="";
+var year="";
+var filetocreate="readme40.txt";
+var fordate="";
+var ___installdate="";
+
+// current date
+var d1 = new Date();
+var month1 = d1.getMonth()+1;
+var day1 = d1.getDate();
+var year1 = d1.getFullYear();
+if(month1<10)
+month1="0"+month1;
+if(day1<10)
+day1="0"+day1;
+//console.log(year1+"-"+month1+"-"+day1);
+// current date
+
+// file mgmt
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function errorHandler(transaction, error) {
+        alert('Error: ' + error.message + ' code: ' + error.code);
+} 
+	
+function nullHandler(){ } 
+
+function fail(evt) {
+        console.log(evt.target.error.code);
+}
+
+function onDeviceReady() {
+document.addEventListener('resume',onResume,false);
+
+d = new Date();
+month = d.getMonth()+1;
+day = d.getDate();
+year = d.getFullYear();
+//alert("Month: "+month+" ++ Day: "+day+" ++ Year:"+year);
+						
+window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
+	
+
+	showAlert();
+	
+   //alert("on device ready");
+}
+
+function gotFS(fileSystem) {
+        try {
+		checkIfFileExists(filetocreate);
+		}
+		catch (e) {
+			console.log('gotFS error');
+		}
+        //fileSystem.root.getFile("readme.txt", {create: true, exclusive: false}, gotFileEntry, fail);
+    }
+
+    function gotFileEntry(fileEntry) {
+        //fileEntry.createWriter(gotFileWriter, fail);
+		//if(typeof(fileEntry)!='undefined')
+		//console.log(fileEntry);
+    }
+
+    function gotFileWriter(writer) {
+        writer.onwriteend = function(evt) {
+            console.log("contents of file now 'some sample text'");
+            writer.truncate(11);  
+            writer.onwriteend = function(evt) {
+                console.log("contents of file now 'some sample'");
+                writer.seek(4);
+                writer.write(" different text");
+                writer.onwriteend = function(evt){
+                    console.log("contents of file now 'some different text'");
+                }
+            };
+        };
+        writer.write("some sample text");
+    }
+
+function checkIfFileExists(path){
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem){
+        fileSystem.root.getFile(path, { create: false }, fileExists, fileDoesNotExist);
+    }, getFSFail); //of requestFileSystem
+}
+
+function fileExists(fileEntry){
+    //alert("File " + fileEntry.fullPath + " exists!");
+	setTimeout(interval,100);
+}
+
+function fileDoesNotExist() {
+    //alert("file does not exist");
+	db.transaction(function(transaction) {
+	populateDB(transaction);
+					//alert("populate db");
+
+				},errorHandler,updatecontents);
+	
+   window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, fail);
+   //fileSystem.root.getFile("readme2.txt", {create: true, exclusive: false}, gotFileEntry, fail);
+   window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem){
+        fileSystem.root.getFile(filetocreate, { create: true }, gotFileEntry, fail);
+    }, getFSFail); //of requestFileSystem
+   setTimeout(interval,10000);
+   
+}
+
+function getFSFail(evt) {
+    console.log(evt.target.error.code);
+}
+			
+function filescopied() {
+	
+//console.log(_counter);
+}
+
+function addslashes(string) {
+    return string.replace(/\\/g, '\\\\').
+        replace(/\u0008/g, '\\b').
+        replace(/\t/g, '\\t').
+        replace(/\n/g, '\\n').
+        replace(/\f/g, '\\f').
+        replace(/\r/g, '\\r').
+        replace(/'/g, '\\\'').
+        replace(/"/g, '\\"');
+}
+
+
+function replaceall(str,replace,with_this)
+{
+    var str_hasil ="";
+    var temp;
+
+    for(var i=0;i<str.length;i++) // not need to be equal. it causes the last change: undefined..
+    {
+        if (str[i] == replace)
+        {
+            temp = with_this;
+        }
+        else
+        {
+                temp = str[i];
+        }
+
+        str_hasil += temp;
+    }
+
+    return str_hasil;
+}
+
+
+function dateAddDays( /*string dd/mm/yyyy*/ datstr, /*int*/ ndays){
+  var dattmp = datstr.split('-').reverse().join('-'),
+      nwdate =  new Date(dattmp);
+  nwdate.setDate(nwdate.getDate()+ndays||1);
+  return [ nwdate.getFullYear()
+          ,zeroPad(nwdate.getMonth()+1,10)
+          ,zeroPad(nwdate.getDate(),10)].join('-');
+}
+
+//function to add zero to date/month < 10
+function zeroPad(nr,base){
+  var len = (String(base).length - String(nr).length)+1;
+  return len > 0? new Array(len).join('0')+nr : nr;
+}
+
+
+
+function onFileSystemSuccess(fileSystem) {
+   //alert(fileSystem.name);
+   //alert(fileSystem.root.name);
+   //alert(fileSystem.root.fullPath);
+   filehandler=fileSystem;  
+   //console.log(filehandler.root.fullPath);
+   
+   jQuery.getJSON("http://365appseries.com/timeflies/webapp/webservices/downloadimages.php?jsoncallback=?&token="+token,function(data){
+
+array_size=data.return.length
+var _counter=1;
+var ___counter=0;
+jQuery.each(data.return,function(i,v) {
+
+//alert(v['caption'].toString().replace(/("|')/g,"\'"));
+//alert(addslashes(v['caption']));
+
+month = d.getMonth()+1;
+if(month<10)
+month="0"+month;
+day = d.getDate();
+if(day<10)
+day="0"+day;
+year = d.getFullYear();
+fordate=year+"-"+month+"-"+day;
+//console.log("fordate: "+fordate);
+//alert(v['id']+" : "+replaceall(v['caption'],"'","`"));
+//var today = new Date(); // Or Date.today()
+//var tomorrow = today.add(1).day();
+//var today = moment();
+//var tomorrow = moment(today).add('days', 1);
+// date function
+// date function
+var ft = new FileTransfer();
+ft.download(
+   "http://365appseries.com/timeflies/webapp/images/full/"+v['path'],
+   filehandler.root.fullPath + "/" + v['path'],
+		   function(entry) {
+		   
+					db.transaction(function(transaction) {
+						___installdate=dateAddDays(day1+"-"+month1+"-"+year1,___counter);
+						transaction.executeSql("insert into images(Path,Caption,Title,fordate,daynumber,installdate) values ('"+v['path']+"','"+replaceall(v['caption'],"'","`")+"','"+replaceall(v['title'],"'","`")+"','"+v['fordate']+"','"+v['id']+"','"+___installdate+"')",[],nullHandler,errorHandler);
+					},errorHandler,filescopied);
+
+		   },
+		   function(error) {
+				console.log(error);
+		   }
+);
+//console.log("Month: "+month);
+d = new Date(fordate);
+d.setDate(d.getDate()+1);
+
+_counter++;
+___counter++;
+});
+
+});
+  
+}
+// file mgmt
+
+function populateDB(tx) {
+    //alert('populateDB');
+	tx.executeSql('DROP TABLE IF EXISTS images ',[],nullHandler,errorHandler);
+	tx.executeSql('DROP TABLE IF EXISTS appdata',[],nullHandler,errorHandler);
+	tx.executeSql("CREATE TABLE IF NOT EXISTS `images` (`ImageID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,`Path` VARCHAR(255) NULL,`Title` VARCHAR(255) NULL,`Caption` TEXT NULL,`Caption2` TEXT NULL,`URL` VARCHAR(255) NULL,`ad` VARCHAR(255) NULL,`fordate` VARCHAR(15) NULL,`showdate` VARCHAR(15) NULL,`daynumber` VARCHAR(15) NULL,`installdate` Date NULL)",[],nullHandler,errorHandler);
+	tx.executeSql("CREATE TABLE IF NOT EXISTS `appdata` (`ID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,`installdate` VARCHAR(15) NULL)",[],nullHandler,errorHandler);
+	//alert("populate db function call");
+}
+
+function updatecontents() { 
+//alert("update contents");
+
+}
+
+function onFileSystemSuccessdonothing(fileSystem) {
+filehandler=fileSystem; 
+
+}
+
+function checkdb() {
+}
+
+function updatecontents2() { 
+//alert(token);
+				//alert("alert document ready");
+				
+				var query="select * from images";
+				db.transaction(function(transaction) {
+														
+                                                       transaction.executeSql(query,[],function(transaction, result) {
+																					  if (result != null && result.rows != null) {
+																					  for (var i = 0; i < result.rows.length; i++) {
+																							var row = result.rows.item(i);
+																							//alert(row['ImageID']+" "+row['Path']+" "+row['Title']+" "+row['Caption']);
+																					  
+																					  }
+																					  }
+																					  else
+																					  {
+																							//alert("no image found");
+																					  }
+                                                                              },errorHandler); 
+                                                       }
+                                                       ,errorHandler,prepareimages);
+
+}
+
+
+
+</script>
+
+<script type="text/javascript">
+function interval(){
+window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccessdonothing, fail);
+				prepareimages();
+				/*
+			var query="select * from images";
+				db.transaction(function(transaction) {
+														
+                                                       transaction.executeSql(query,[],function(transaction, result) {
+																					  if (result != null && result.rows != null) {
+																					  for (var i = 0; i < result.rows.length; i++) {
+																							var row = result.rows.item(i);
+																							//alert(row['ImageID']+" "+row['Path']+" "+row['Title']+" "+row['Caption']);
+																					  
+																					  }
+																					  }
+																					  else
+																					  {
+																							alert("no image found");
+																					  }
+                                                                              },errorHandler); 
+                                                       }
+                                                       ,errorHandler,prepareimages);	
+													   
+													   */
+				
+				
+		}
+  
+function interval2(){
+				loadimages();
+								
+		}
+
+		
+jQuery(document).ready(function() {
+		//setInterval(interval2,20000);
+});
+
+</script>	
+	
+<script type="text/javascript">
+var shareimage="";
+var slidesarray=[];
+var gallery = '';
+
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
+
+function prepareimages() {
+//alert('prepareimages');
+var d2 = new Date();
+var month2 = d2.getMonth()+1;
+var day2 = d2.getDate();
+var year2 = d2.getFullYear();
+if(month2<10)
+month2="0"+month2;
+if(day2<10)
+day2="0"+day2;
+//console.log(year1+"-"+month1+"-"+day1);
+
+// query for getting the images equal or less than today's date
+//var query="select * from images where fordate<='"+year1+"-"+month1+"-"+day1+"' order by ImageID";
+//var query="select * from images where fordate<='"+year2+"-"+month2+"-"+day2+"' order by ImageID desc";
+var query="select * from images where fordate<='"+year2+"-"+month2+"-"+day2+"' order by fordate,ImageID asc";
+//var query="select * from images order by ImageID";
+//alert(query);
+
+//var query="select * from images order by ImageID";
+				db.transaction(function(transaction) {
+														
+                                                       transaction.executeSql(query,[],function(transaction, result) {
+																					  
+																					  // image width: 320, height: 355
+																					  // image width: 340, height: 390
+																					  if (result != null && result.rows != null) {
+																					  slidesarray=[];
+																					  
+																					  
+																					  var __images="";
+																					  for (var i = 0; i < result.rows.length; i++) {
+																							var row = result.rows.item(i);
+																							
+																							//console.log(row['ImageID']+" "+row['Title']+" "+row['fordate']+" "+row['installdate']);
+																							//tx.executeSql("CREATE TABLE IF NOT EXISTS `images` (`ImageID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,`Path` VARCHAR(255) NULL,`Title` VARCHAR(255) NULL,`Caption` TEXT NULL,`Caption2` TEXT NULL,`URL` VARCHAR(255) NULL,`ad` VARCHAR(255) NULL,`fordate` VARCHAR(15) NULL,`showdate` VARCHAR(15) NULL,`daynumber` VARCHAR(15) NULL,`installdate` Date NULL)",[],nullHandler,errorHandler);
+																							
+																							//alert(row['fordate']);
+																							//__images+="{"+"img:'file://"+filehandler.root.fullPath + "/" + row['Path']+"',width:320,height:355,";
+																							//__images+="desc:"+"\"<div style='padding:0 10px;'>"+row['Title']+"</div> <p style='font-size:12px; padding:0 10px; text-align:left;'>"+row['Caption']+"</p>\"";
+																							//__images+="},";
+																							
+																							/*
+																							var img_array={img:"file://"+filehandler.root.fullPath + "/" + row['Path'],width:350,height:435,desc:"<div style='padding:0 10px;'>"+row['Title']+"</div> <p style='font-size:13.5px; padding:0 10px; text-align:left;'>"+row['Caption']+"</p>"};
+																							*/
+																							
+																							var img_array={img:"file://"+filehandler.root.fullPath + "/" + row['Path'],width:350,height:435,desc:"<div style='padding:0 10px;'>"+row['Title']+"</div> <p style='font-size:13.5px; padding:0 10px; text-align:left;'>"+row['Caption']+"</p>"};
+																							
+																							//img_array['img']="file://"+filehandler.root.fullPath + "/" + row['Path'];
+																							//img_array['width']=320;
+																							//img_array['height']=355;
+																							//img_array['desc']="<div style='padding:0 10px;'>"+row['Title']+"</div> <p style='font-size:12px; padding:0 10px; text-align:left;'>"+row['Caption']+"</p>";
+																							
+																							//slidesarray[i]=img_array;
+																							slidesarray.push(img_array);
+                                                                              
+																							//console.log("DB fordate: "+row['fordate']+" "+row['ImageID']);
+																							
+																							//console.log(slidesarray[0]['img']);
+																							//console.log("----------------------------------------------------");
+																					        //jQuery('img[id=img]').attr('src',"file://"+filehandler.root.fullPath + "/" + row['Path']); 
+																					  }
+																					  }
+																					  else
+																					  {
+																							
+																					  }
+                                                                              },errorHandler); 
+                                                       }
+                                                       //,errorHandler,loadimages);
+													   ,errorHandler,loadimages);
+													   
+
+
+}
+
+
+
+function loadimages() {
+var __counter=0;
+//console.log(slidesarray.length);
+slidesarray=shuffleArray(slidesarray);
+
+for(var aaa=0; aaa<slidesarray.length; aaa++) {
+//console.log(slidesarray[aaa].img);
+//console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+__counter++;
+}
+//console.log(slidesarray[2].img);
+document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+var	el,
+	i,
+	page,
+	dots = document.querySelectorAll('#nav li'),
+	slides = slidesarray;
+	/*
+	slides = [
+		//__images
+		{img:'file:///Users/CED/Library/Application Support/iPhone Simulator/6.0/Applications/72AE0523-2C91-4535-98EC-B01A0597FD32/Documents/ABobFrandsen.jpg',width:320,height:355,desc:"<div style='padding:0 10px;'>A Bob Frandsen Original</div> <p style='font-size:12px; padding:0 10px; text-align:left;'>Bobs your tier for every day of the coming year, an Australian who struts the world fly tying stage, hes never fished for, let alone caught, a salmon on one of his ties, though a lot of anglers have.</p>"},
+		{img:'file:///Users/CED/Library/Application Support/iPhone Simulator/6.0/Applications/72AE0523-2C91-4535-98EC-B01A0597FD32/Documents/Adonis.jpg',width:320,height:355,desc:"<div style='padding:0 10px;'>Adonis</div><p style='font-size:12px; padding:0 10px; text-align:left;'>A stunningly beautiful old wet fly pattern that attracts the eyes of fish and angler. It joins the gloriously colored ranks of other early American patterns of the pre 1900s.</p>"},
+		{img:'file:///Users/CED/Library/Application Support/iPhone Simulator/6.0/Applications/72AE0523-2C91-4535-98EC-B01A0597FD32/Documents/Aglaia.jpg',width:320,height:355,desc:"<div style='padding:0 10px;'>Aglaia</div><p style='font-size:12px; padding:0 10px; text-align:left;'>Meet the progeny of the gods. For those uninitiated in Greek mythology, Aglaia was daughter of the god Zeus and the nymph Eurynome and one of three sisters devoted to bringing joy. An old pattern from Ephemera and forerunner of the Silver Grey.</p>"}
+
+		
+	];
+	*/
+	
+	//slides.push(__images);
+
+gallery = new SwipeView('#wrapper', { numberOfPages: slides.length });
+var ___limit=3;
+// Load initial data
+if(slidesarray.length==1)
+___limit=3;
+
+for (i=0; i<___limit; i++) {
+
+	page = i==0 ? slides.length-1 : i-1;
+	//console.log(slides[page].img);
+	el = document.createElement('img');
+	el.className = 'loading';
+	el.src = slides[page].img;
+	el.width = slides[page].width;
+	el.height = slides[page].height;
+	el.onload = function () { this.className = ''; }
+	gallery.masterPages[i].appendChild(el);
+    // share file when load
+	if(i==0) {
+	__src=(el.src).split("/Documents/");
+	shareimage=__src[1].split(".")[0]+".html";
+	//console.log("onLoad: "+shareimage);
+	}
+	el = document.createElement('span');
+	el.innerHTML = slides[page].desc;
+	gallery.masterPages[i].appendChild(el);
+	
+// share initialize
+
+	jQuery('a.share-icon-facebook').attr('href','http://www.facebook.com/share.php?u=http://365appseries.com/timeflies/'+shareimage+'');
+	jQuery('a.share-icon-pinterest').attr('href','http://pinterest.com/pin/create/button/?url=http://365appseries.com/timeflies/'+shareimage+'&media=&description=');
+	jQuery('a.share-icon-googleplus').attr('href','https://plusone.google.com/_/+1/confirm?hl=en&url=http://365appseries.com/timeflies/'+shareimage);
+	jQuery('a.share-icon-twitter').attr('href','https://twitter.com/share?via=http://365appseries.com/timeflies/'+shareimage+'&text=');
+	//jQuery('a.share-icon-linkedin').attr('href','http://www.linkedin.com/shareArticle?mini=true&url=http://365appseries.com/timeflies/'+shareimage+'&title=&source='+shareimage+'');
+	
+	// share initialize
+	
+}
+
+	
+gallery.onFlip(function () {
+   
+	var el,
+		upcoming,
+		i;
+	if(slidesarray.length==1)
+___limit=3;
+	for (i=0; i<___limit; i++) {
+
+		upcoming = gallery.masterPages[i].dataset.upcomingPageIndex;
+		if (upcoming != gallery.masterPages[i].dataset.pageIndex) {
+			el = gallery.masterPages[i].querySelector('img');
+			el.className = 'loading';
+			el.src = slides[upcoming].img;
+			el.width = slides[upcoming].width;
+			el.height = slides[upcoming].height;
+			
+			el = gallery.masterPages[i].querySelector('span');
+			el.innerHTML = slides[upcoming].desc;
+		}
+	}
+	document.querySelector('#nav .selected').className = '';
+	dots[gallery.pageIndex+1].className = 'selected';
+	//alert("onFlip");
+});
+
+gallery.onMoveOut(function () {
+
+	gallery.masterPages[gallery.currentMasterPage].className = gallery.masterPages[gallery.currentMasterPage].className.replace(/(^|\s)swipeview-active(\s|$)/, '');
+	__img=gallery.masterPages[gallery.currentMasterPage].querySelector('img');
+	__src=jQuery(__img).attr('src');
+	__src=__src.split("/Documents/");
+	shareimage=__src[1].split(".")[0]+".html";
+	//console.log("onMoveOut: "+shareimage);
+
+	jQuery('a.share-icon-facebook').attr('href','http://www.facebook.com/share.php?u=http://365appseries.com/timeflies/'+shareimage+'');
+	jQuery('a.share-icon-pinterest').attr('href','http://pinterest.com/pin/create/button/?url=http://365appseries.com/timeflies/'+shareimage+'&media=&description=');
+	jQuery('a.share-icon-googleplus').attr('href','https://plusone.google.com/_/+1/confirm?hl=en&url=http://365appseries.com/timeflies/'+shareimage);
+	jQuery('a.share-icon-twitter').attr('href','https://twitter.com/share?via=http://365appseries.com/timeflies/'+shareimage+'&text=');
+	//jQuery('a.share-icon-linkedin').attr('href','http://www.linkedin.com/shareArticle?mini=true&url=http://365appseries.com/timeflies/'+shareimage+'&title=&source='+shareimage+'');
+
+	
+});
+
+gallery.onMoveIn(function () {
+	var className = gallery.masterPages[gallery.currentMasterPage].className;
+	/(^|\s)swipeview-active(\s|$)/.test(className) || (gallery.masterPages[gallery.currentMasterPage].className = !className ? 'swipeview-active' : className + ' swipeview-active');
+		
+});	
+
+//gallery.goToPage(8);
+
+gallery.goToPage(slidesarray.length);
+
+
+	
+	//console.log(shareimage);
+
+	jQuery('a.share-icon-facebook').attr('href','http://www.facebook.com/share.php?u=http://365appseries.com/timeflies/'+shareimage+'');
+	jQuery('a.share-icon-pinterest').attr('href','http://pinterest.com/pin/create/button/?url=http://365appseries.com/timeflies/'+shareimage+'&media=&description=');
+	jQuery('a.share-icon-googleplus').attr('href','https://plusone.google.com/_/+1/confirm?hl=en&url=http://365appseries.com/timeflies/'+shareimage);
+	jQuery('a.share-icon-twitter').attr('href','https://twitter.com/share?via=http://365appseries.com/timeflies/'+shareimage+'&text=');
+	//jQuery('a.share-icon-linkedin').attr('href','http://www.linkedin.com/shareArticle?mini=true&url=http://365appseries.com/timeflies/'+shareimage+'&title=&source='+shareimage+'');
+
+ }
+
+</script>
+
+<script>
+/*
+	slides = [
+		{
+			img: 'images/pic01.jpg',
+			width: 320,
+			height: 355,
+			desc: "<div style='padding:0 10px;'>A Bob Frandsen Original</div> <p style='font-size:12px; padding:0 10px; text-align:left;'>None of the tedious tying of the old-style salmon flies for this, one fo the world's most popular, more modern, salmon flies. The Blue Charm was originated on Scotland's Dee River in the 1950s by Colin Simpson.</p>"
+		},
+		{
+			img: 'images/pic02.jpg',
+			width: 300,
+			height: 164,
+			desc: 'Tuscan Landscape'
+		},
+		{
+			img: 'images/pic03.jpg',
+			width: 300,
+			height: 213,
+			desc: 'Colosseo, Rome, Italy'
+		},
+		{
+			img: 'images/pic04.jpg',
+			width: 147,
+			height: 220,
+			desc: 'Somewhere near Chinatown, San Francisco'
+		},
+		{
+			img: 'images/pic05.jpg',
+			width: 300,
+			height: 213,
+			desc: 'Medieval guard tower, Asciano, Siena, Italy'
+		},
+		{
+			img: 'images/pic06.jpg',
+			width: 165,
+			height: 220,
+			desc: 'Leaning tower, Pisa, Italy'
+		}
+	];
+	*/
+</script>
+
+
+
+<!-- jquery share -->
+            
+
+
+<script type="text/javascript" language="JavaScript">
+
+function onResume() {
+setTimeout(function() {
+//notification.cancel(1);
+//alert(slidesarray.length);
+//gallery.goToPage(slidesarray.length);
+setTimeout(function() {
+//alert(slidesarray.length);
+//prepareimages();
+//gallery.goToPage(slidesarray.length);
+//document.location='index.html';
+gallery.goToPage((slidesarray.length)-1);
+},500);
+
+},0);
+}
+
+jQuery(window).load(function () {
+//alert(jQuery(window).width());
+
+
+var counter=1;
+			setInterval(function() {
+			    if(counter<=365) {
+				//alert('interval'+counter);
+					//notification.local_min(counter*86400);
+					notification.local_min(counter*1440);
+					//notification.local_timed(9,55);
+				}
+				counter++;
+			},1);	
+
+
+
+    
+    
+});
+</script>
+<!-- jquery share -->
+
+
+</body>
+</html>
+
+
+
