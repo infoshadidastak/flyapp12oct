@@ -103,7 +103,7 @@ day1="0"+day1;
 // current date
 
 // file mgmt
-document.addEventListener("deviceready", onDeviceReady, false);
+document.addEventListener("deviceready", onDeviceReady(), false);
 
 function errorHandler(transaction, error) {
         alert('Error: ' + error.message + ' code: ' + error.code);
@@ -117,7 +117,7 @@ function fail(evt) {
 }
 
 function onDeviceReady() {
-document.addEventListener('resume',onResume,false);
+document.addEventListener('resume',onResume(),false);
 
 d = new Date();
 month = d.getMonth()+1;
